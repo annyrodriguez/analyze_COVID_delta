@@ -1,6 +1,6 @@
 # Inspect CDC Data
 # Gabriel Odom and Anny Rodriguez
-# 2021-08-03
+# 2021-08-03 - Updated `2021-11-09`
 
 library(readxl)
 library(lubridate)
@@ -34,6 +34,8 @@ colsOfInterest <- c(
 	"Cumulative cases",
 	"Viral (RT-PCR) lab test positivity rate - last 7 days (may be an underestimate due to delayed reporting)",
 	"Total RT-PCR diagnostic tests - last 7 days (may be an underestimate due to delayed reporting)",
+	"NAAT positivity rate - last 7 days (may be an underestimate due to delayed reporting)",
+	"Total NAATs - last 7 days (may be an underestimate due to delayed reporting)",
 	# Hospitalizations
 	"Confirmed COVID-19 admissions - last 7 days",
 	"Suspected COVID-19 admissions - last 7 days",
@@ -84,7 +86,7 @@ allData_ls <-
 	)
 t1 <- Sys.time()
 t1 - t0
-# 1.025038 min
+# 1.285412 min
 
 allData_df <- bind_rows(allData_ls, .id = "DataSet")
 
@@ -109,10 +111,21 @@ cleanData_df <-
 				`Viral (RT-PCR) lab test positivity rate - last 7 days`
 		)
 	) %>% 
-	select(
-		-`Viral (RT-PCR) lab test positivity rate - last 7 days (may exhibit anomalies due to delayed reporting)`
-	) %>% 
-	
+  ### Using the NAAT positivity rate instead of the PCR ###
+  rename(
+    `NAAT positivity rate - last 7 days` = 
+      `NAAT positivity rate - last 7 days (may be an underestimate due to delayed reporting)`
+  ) %>% 
+  mutate(
+    `Positivity Rate` = case_when(
+      # If the old column (PCR) doesn't have missing data, move it #
+      is.na(`Viral (RT-PCR) lab test positivity rate - last 7 days`) ~ 
+        `NAAT positivity rate - last 7 days`,
+      # If the new colum is not missing data, keep it #
+      !is.na(`Viral (RT-PCR) lab test positivity rate - last 7 days`) ~
+        `Viral (RT-PCR) lab test positivity rate - last 7 days`
+    )
+  ) %>% 
 	# ###  Duplicated Vaccination 12-17: One Dose  ###
 	# # "People with at least 1 dose - ages 12-17"
 	# mutate(
@@ -176,7 +189,7 @@ cleanData_df <-
 
 
 write_csv(
-	cleanData_df, "data_clean/cleaned_CDC_COVID_data_20211018.csv"
+	cleanData_df, "data_clean/cleaned_CDC_COVID_data_20211109.csv"
 )
 
 # Restart here
