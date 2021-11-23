@@ -10,39 +10,34 @@
 library(shiny)
 library(ggplot2)
 library(Stat2Data)
-cleanData3_df <- read_csv("~/Documents/analyze_COVID_delta/data_clean/cleaned2_CDC_COVID_data_20211109.csv")
+cleanData3_df <- read_csv("~/Documents/analyze_COVID_delta/COVID19/cleaned_CDC_COVID_data_20211114.csv")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
     
     # Application title
-    titlePanel("COVID-19 Graphs"),
+    titlePanel("COVID-19 Average Cases"),
     
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
-        sidebarPanel(
-            radioButtons("vars1", label = "Date",
-                         choices = list("GPA","HSGPA", "SATV", "SATM", "Male", "HU", "SS", "FirstGen", "White", "CollegeBound"),
-                         selected = "HSGPA")
-        ),
-        radioButtons("vars2", label = "Variable 2:",
-                     choices = list("GPA","HSGPA", "SATV", "SATM", "Male", "HU", "SS", "FirstGen", "White", "CollegeBound"),
-                     selected = "HSGPA")
-    ),
+        radioButtons("vars1", label = "County",
+             choices = list("Miami-Dade","Broward", "Palm Beach"),
+             selected = ("Miami-Dade")),
     # Show a plot of the generated distribution
     mainPanel(
         plotOutput("scatter")
     )),
-
-# Define server logic required to draw a histogram
+# Define server logic required to draw a scatterplot
 server <- function(input, output) {
     
     output$scatter <- renderPlot({
         scatter <- ggplot(
-            data = FirstYearGPA,
+            data = cleanData3_df ,
             aes(
-                x = !!as.name(input$vars1),
-                y = !!as.name(input$vars2)
+                x = Date,
+                y = `Proportion of Positive Tests - last 7 days`,
+                color = !!as.name(c"County"),
+                group = !!as.name("County")
             )) +
             geom_point(vars = input$vars)
         
@@ -52,20 +47,6 @@ server <- function(input, output) {
         scatter
     })
 }
-# server <- function(input, output) {
-# 
-# data("FirstYearGPA")
-# 
-# output$scatter <- renderPlot({
-#   scatter <- ggplot(
-#     data = FirstYearGPA,
-#     aes(
-#       x = !!as.name(input$vars1),
-#       y = !!as.name(input$vars2)
-#     )) +
-#     geom_point()
-# })
-# }
 
 # Run the application 
 shinyApp(ui = ui, server = server)
