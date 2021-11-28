@@ -189,7 +189,7 @@ cleanData_df <-
 
 
 write_csv(
-	cleanData_df, "data_clean/cleaned_CDC_COVID_data_20211114.csv"
+	cleanData_df, "data_clean/cleaned_CDC_COVID_data_20211123.csv"
 )
 
 # Restart here
