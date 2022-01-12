@@ -53,9 +53,10 @@ colsOfInterest <- c(
 	"People who are fully vaccinated as % of population - ages 65+",
 	"People with at least 1 dose - 12-17",
 	"People who are fully vaccinated - 12-17",
-	"People who are fully vaccinated as % of population - 12-17",
-	"People who have received a booster dose since August 13, 2021",
-	"People who have received a booster dose as % of fully vaccinated population"
+	"People who are fully vaccinated as % of population - 12-17"
+	# STATE-LEVEL ONLY
+	# "People who have received a booster dose since August 13, 2021",
+	# "People who have received a booster dose as % of fully vaccinated population"
 )
 
 # Misspellings
@@ -88,7 +89,7 @@ allData_ls <-
 	)
 t1 <- Sys.time()
 t1 - t0
-# 1.285412 min
+# 2.53 min
 
 allData_df <- bind_rows(allData_ls, .id = "DataSet")
 
@@ -190,8 +191,23 @@ cleanData_df <-
 	select(Date, everything())
 
 
+
+######  Check our Work  #######################################################
+ggplot(data = cleanData_df) +
+	theme_classic() +
+	theme(legend.position = "none") +
+	aes(
+		x = Date,
+		y = `% ventilators in use by COVID-19 patient`,
+		colour = County,
+		group = County
+	) +
+	geom_line()
+
+today_char <- format(Sys.Date(), format="%Y%m%d")
 write_csv(
-	cleanData_df, "data_clean/cleaned_CDC_COVID_data_20220110.csv"
+	cleanData_df,
+	paste0("data_clean/cleaned_CDC_COVID_data_", today_char, ".csv")
 )
 
 # Restart here
