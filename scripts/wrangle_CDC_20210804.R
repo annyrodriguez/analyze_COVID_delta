@@ -53,7 +53,9 @@ colsOfInterest <- c(
 	"People who are fully vaccinated as % of population - ages 65+",
 	"People with at least 1 dose - 12-17",
 	"People who are fully vaccinated - 12-17",
-	"People who are fully vaccinated as % of population - 12-17"
+	"People who are fully vaccinated as % of population - 12-17",
+	"People who have received a booster dose since August 13, 2021",
+	"People who have received a booster dose as % of fully vaccinated population"
 )
 
 # Misspellings
@@ -189,7 +191,7 @@ cleanData_df <-
 
 
 write_csv(
-	cleanData_df, "data_clean/cleaned_CDC_COVID_data_20211123.csv"
+	cleanData_df, "data_clean/cleaned_CDC_COVID_data_20220110.csv"
 )
 
 # Restart here
