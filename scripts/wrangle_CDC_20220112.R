@@ -204,7 +204,7 @@ ggplot(data = cleanData_df) +
 	) +
 	geom_line()
 
-today_char <- format(Sys.Date(), format="%Y%m%d")
+today_char <- format(Sys.Date(), format = "%Y%m%d")
 write_csv(
 	cleanData_df,
 	paste0("data_clean/cleaned_CDC_COVID_data_", today_char, ".csv")

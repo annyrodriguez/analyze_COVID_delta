@@ -24,8 +24,9 @@ county_char <- c("Miami-Dade", "Broward", "Palm Beach")
 ######  Data for Plots  #######################################################
 
 ###  Setup  ###
+today_char <- format(Sys.Date(), format = "%Y%m%d")
 cleanData_df <- read_csv(
-	"data_clean/cleaned_CDC_COVID_data_20220110.csv",
+	paste0("data_clean/cleaned_CDC_COVID_data_", today_char, ".csv"),
 	# read_csv() uses the first 1000 rows only, but we know already that we have
 	#   a bunch of missing data for the first few months
 	guess_max = 10000
@@ -33,7 +34,7 @@ cleanData_df <- read_csv(
 	mutate(County = str_remove(County, pattern = " County, FL"))
 
 populations_df <-
-	read_csv("data_clean/county_pop_clean_20210804.csv") %>% 
+	read_csv("data_clean/county_pop_clean_20220112.csv") %>% 
 	# Issues with matching names for counties 13, 55, 56, 63; 
 	mutate(
 		County = case_when(
@@ -44,7 +45,7 @@ populations_df <-
 		)
 	)
 
-# Cleaning script: "scripts/clean_provisional_population_20210802.R"
+# Cleaning script: "scripts/clean_provisional_population_20210804.R"
 # Get the following values for Miami-Dade: 2,918,507 (total) & 2523478 (12+)
 
 cleanData2_df <- 
@@ -54,8 +55,9 @@ cleanData2_df <-
 	mutate(
 		`Proportion Vaccinated, Total` = 
 			`People who are fully vaccinated` / `Total Population`,
+		# As of 20211102, the vaccines have been approved for the 5+ population
 		`Proportion Vaccinated of Eligible Population` = 
-			`People who are fully vaccinated` / `Population 12+`,
+			`People who are fully vaccinated` / `Population 5+`,
 		`Proportion Vaccinated, 65+` = 
 			`People who are fully vaccinated - ages 65+` / `Population 65+`,
 		`Proportion Vaccinated, 12-17` = 
@@ -63,8 +65,11 @@ cleanData2_df <-
 	)
 
 write_csv(
-  cleanData2_df, "COVID19/cleaned1_CDC_COVID_data_20220110.csv"
+  cleanData2_df,
+  paste0("COVID19/cleaned1_CDC_COVID_data_", today_char, ".csv")
 )
+
+
 
 ######  Summary Plots  ########################################################
 
@@ -95,15 +100,11 @@ cases_gg <-
 cases_gg
 
 
-# This is showing 20k positive cases per day in MDC; this should be divided by
-#   7.
-
-
 ###  Proportion Positive  ###
 # This value is problematic. It does not match what we have seen in the FLDoH
 #   data.
 # UPDATE 2021-08-02: Mary Jo reminded us that FLDoH removes cases that had tested
-#   positive before. The CDC does not. This may be an issue
+#   positive before. The CDC does not. This will be an issue
 propPos_gg <- 
 	ggplot(
 		data = cleanData2_df %>% 
@@ -130,7 +131,6 @@ propPos_gg <-
 
 propPos_gg
 
-# Removed the geom_point() and geom_smooth() by request of Dr. Bursac.
 
 ###  Hospitalisations  ###
 hosp_gg <- 

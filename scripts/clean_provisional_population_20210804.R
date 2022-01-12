@@ -1,6 +1,6 @@
 # Wrangle Provisional FL Population
-# Gabriel Odom
-# 2021-08-02
+# Gabriel Odom and Anny Rodriguez
+# 2021-08-02; updated 2022-01-12
 
 # Mary Jo gave us an .xlsx file with the population by county and age group. 
 #   It's a mess. Source:
@@ -83,7 +83,8 @@ popsWithGroups_df <-
 	mutate(
 		`Age Groups` = case_when(
 			Ages == "Total" ~ "Total",
-			Ages %in% c("<1", "1-4", "5-9", "10", "11") ~ "0-11",
+			Ages %in% c("<1", "1-4") ~ "0-4",
+			Ages %in% c("5-9", "10", "11") ~ "5-11",
 			Ages %in% as.character(12:17) ~ "12-17",
 			Ages %in% c("65-74", "75-84", "85+") ~ "65+",
 			TRUE ~ "18-64"
@@ -92,7 +93,9 @@ popsWithGroups_df <-
 	mutate(
 		AllAges     = `Age Groups` == "Total",
 		# This requires us to break up 15:19; done on 2021-08-04
+		`Ages5-11`  = `Age Groups` == "5-11",
 		`Ages12-17` = `Age Groups` == "12-17",
+		`Ages5+`    = `Age Groups` %in% c("5-11", "12-17", "18-64", "65+"),
 		`Ages12+`   = `Age Groups` %in% c("12-17", "18-64", "65+"),
 		`Ages65+`   = `Age Groups` == "65+"
 	) %>% 
@@ -105,12 +108,26 @@ totalPop_df <-
 	filter(AllAges) %>% 
 	select(County, `Total Population` = Population)
 
+pop511_df <- 
+	popsWithGroups_df %>% 
+	filter(`Ages5-11`) %>% 
+	group_by(County) %>% 
+	summarise(`Population 5-11` = sum(Population)) %>% 
+	select(County, `Population 5-11`)
+
 pop1217_df <- 
 	popsWithGroups_df %>% 
 	filter(`Ages12-17`) %>% 
 	group_by(County) %>% 
 	summarise(`Population 12-17` = sum(Population)) %>% 
 	select(County, `Population 12-17`)
+
+pop5Up_df <- 
+	popsWithGroups_df %>% 
+	filter(`Ages5+`) %>% 
+	group_by(County) %>% 
+	summarise(`Population 5+` = sum(Population)) %>% 
+	select(County, `Population 5+`)
 
 pop12Up_df <- 
 	popsWithGroups_df %>% 
@@ -127,7 +144,9 @@ pop65Up_df <-
 	select(County, `Population 65+`)
 
 populationSummary_df <- 
-	pop1217_df %>% 
+	pop511_df %>% 
+	left_join(pop1217_df, by = "County") %>% 
+	left_join(pop5Up_df, by = "County") %>% 
 	left_join(pop12Up_df, by = "County") %>% 
 	left_join(pop65Up_df, by = "County") %>% 
 	left_join(totalPop_df, by = "County")
@@ -136,5 +155,5 @@ populationSummary_df <-
 ###  Save Results  ###
 write_csv(
 	populationSummary_df,
-	file = "data_clean/county_pop_clean_20210804.csv"
+	file = "data_clean/county_pop_clean_20220112.csv"
 )
