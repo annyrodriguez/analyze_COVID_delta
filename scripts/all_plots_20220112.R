@@ -193,7 +193,7 @@ ggarrange(
 )
 
 ggsave(
-	"figures/sfl_summary_20220110.pdf",
+	paste0("figures/sfl_summary_",today_char, ".pdf"),
 	# 16 x 9 widescreen format, but sized to potentially fit on a screen
 	width = 12, height = 6.75, units = "in"
 )
@@ -306,7 +306,7 @@ ggarrange(
 )
 
 ggsave(
-	"figures/sfl_svaccinations_20220110.pdf",
+	paste0("figures/sfl_svaccinations_", today_char,".pdf"),
 	# 16 x 9 widescreen format, but sized to potentially fit on a screen
 	width = 12, height = 6.75, units = "in"
 )
