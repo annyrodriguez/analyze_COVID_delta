@@ -6,7 +6,7 @@ library(shinythemes)
 library(shinydashboard)
 
 
-cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220122.csv")
+cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220214.csv")
 county_char <- c("Miami-Dade", "Broward", "Palm Beach")
 cbbPalette <- c(
     "#081E3F", "#B6862C", "#CC0066", "#00FFFF", "#FFCC00", "#000000"
