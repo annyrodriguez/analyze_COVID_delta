@@ -6,7 +6,7 @@ library(shinythemes)
 library(shinydashboard)
 
 
-cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220214.csv")
+cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220314.csv")
 county_char <- c("Miami-Dade", "Broward", "Palm Beach")
 cbbPalette <- c(
     "#081E3F", "#B6862C", "#CC0066", "#00FFFF", "#FFCC00", "#000000"
@@ -17,14 +17,18 @@ ui <- fluidPage(
     titlePanel("COVID-19 Informational Graphs - Miami-Dade, Broward, and Palm Beach Counties"),
     hr(style="border-color: #081E3F;"),
     sidebarLayout(
-        sidebarPanel(checkboxGroupInput("vars1", label = "County",
+        sidebarPanel(
+            helpText(strong("Please select which county/counties you would like to view.")),
+            checkboxGroupInput("vars1", label = "County",
              choices = county_char,
              selected = ("Miami-Dade"),
              width = 12)),
         
     # plot panel     
     mainPanel(
-
+        p("Since the start of the COVID-19 pandemic, we have been tasked with presenting our findings
+          in an easy-to-read format."),
+        
             # tab layout with click option
             tabsetPanel(
                 tabPanel("Average Cases",plotOutput('AveCases', click = "plot_click"), verbatimTextOutput("info")),
