@@ -6,7 +6,7 @@ library(shinythemes)
 library(shinydashboard)
 
 
-cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220314.csv")
+cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220425.csv")
 county_char <- c("Miami-Dade", "Broward", "Palm Beach")
 cbbPalette <- c(
     "#081E3F", "#B6862C", "#CC0066", "#00FFFF", "#FFCC00", "#000000"
@@ -22,16 +22,73 @@ ui <- fluidPage(
             checkboxGroupInput("vars1", label = "County",
              choices = county_char,
              selected = ("Miami-Dade"),
-             width = 12)),
+             width = 12)
+        ),
         
+    
     # plot panel     
     mainPanel(
-        p("Since the start of the COVID-19 pandemic, we have been tasked with presenting our findings
-          in an easy-to-read format."),
+        h2("Introduction", style = "color:#B6862C"),
+        h4("Anny Rodriguez, Gabriel Odom, Roy Williams, Zoran Bursac, and Mary Jo Trepka", style = "color:#1F6DBA"),
+        br(),
+          p("Public understanding of science is critical in time of crisis. 
+          We are examining the trajectory of COVID-19 in three of the largest counties in Florida:", 
+          strong(span("Miami-Dade, Broward, and Palm Beach.", style = "color:#1F6DBA"))),
+        br(),
+          p("We can add information here"),
+        br(),
+        h3("About the Data", style = "color:#B6862C"),
+          p( "We're using the data provided by the Centers of Disease Control and Prevention (CDC) through their",
+          strong("Community Health Report"), 
+          "which can be found",
+          tags$a(href="https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9", "here"),
+          "."),
+        br(),
+          p("There may be variance in reporting due to the nature of data collection. 
+            This may cause temporary spikes or dips (e.g. shifts from reporting confirmed and probable cases to reporting just confirmed cases).", 
+          "All data are presented as", 
+          strong("7-day totals or averages"),
+          "to adjust for these anomalies as well as weekly variations in reporting."),
+          br(),
+          p(" For population, we used the data provided by",
+          strong("Florida's Department of Health's Bureau of Community Health Assessment's
+          Division of Public Health Statistics and Performance Management"),
+          "which can be found",
+          tags$a(href="https://www.flhealthcharts.gov/FLQUERY_New/Population/Count", "here"),
+          "."),
+        br(),
+          p("It is important to note that",
+          strong(span("colors", style = "color:#1F6DBA")),
+          "are not tied to a specific",
+          strong("county"),
+          ", they are subject to change."),
+        br(),
+        h3("Average Cases", style = "color:#B6862C"),
+          p("This graph shows the number and 7-day moving average of COVID-19 cases per day for"),
+        br(),
+        h3("Proportion Positive", style = "color:#B6862C"),
+          p("This graph shows the positivy rate based on the 7-day moving average."),
+        br(),
+        h3("Hospitalizations", style = "color:#B6862C"),
+          p("This graph shows the average number of COVID-19-related hospitalizations based on the 7-day moving average."),
+        br(),
+        h3("Fully Vaccinated Proportion", style = "color:#B6862C"),
+          p("This graph shows the proporation of individuals who were eligible and fully vaccinated. The definition of fully vaccinated is completed dose.
+            It is important to note that this proportion does not include information on booster vaccines."),
+        br(),
+        h3("Eligible Vaccinated Proportion", style = "color:#B6862C"),
+          p("This graph shows the proportion of individuals who are eligible to be vaccinated."),
+        br(),
+        h3("65+ Vaccinated Proportion", style = "color:#B6862C"),
+          p("This graph shows the proportion of individuals who are 65 years of age and older and who are fully vaccinated."),
+        br(),
+        h3("12-17 Vaccinated Proportion", style = "color:#B6862C"),
+          p("This graph shows the proportion of individuals who are between the ages of 12 and 17 and who are fully vaccinated."),
+        br(),
         
             # tab layout with click option
             tabsetPanel(
-                tabPanel("Average Cases",plotOutput('AveCases', click = "plot_click"), verbatimTextOutput("info")),
+                tabPanel("Average Cases", plotOutput('AveCases', click = "plot_click"), verbatimTextOutput("info")),
                 tabPanel("Proportion Positive", plotOutput('PropPos', click = "plot_click"), verbatimTextOutput("info1")),
                 tabPanel("Hospitalizations", plotOutput("Hosp", click = "plot_click"), verbatimTextOutput("info2")),
                 tabPanel("Fully Vaccinated Proportion", plotOutput("VaxxedTotal", click = "plot_click"), verbatimTextOutput("info3")),
@@ -39,40 +96,64 @@ ui <- fluidPage(
                 tabPanel("65+ Vaccinated Proportion", plotOutput("Vaxxed65", click = "plot_click"), verbatimTextOutput("info5")),
                 tabPanel("12-17 Vaccinated Proportion", plotOutput("Vaxxed1217", click = "plot_click"), verbatimTextOutput("info6"))
                 )
-                         
     ))
 )
+
+
 server <- function(input, output){
 
-    ## Average Cases    
+    ## Average Cases 
     output$AveCases <- renderPlot ({
-        AveCases <- 
-            ggplot(
-            data = cleanData_df %>% 
-                filter(County == input$vars1) %>% 
-                filter(Date >= ymd("20210101")) %>%
-                mutate(aveCases = `Cases - last 7 days` / 7),
-            aes(
-                x = Date,
-                y = aveCases,
-                group = County,
-                colour = County
-            )) +
-            theme_bw() +
-            theme(legend.position = "bottom") +
-            labs(
-                title = "COVID-19 Cases",
-                x = "Average No. Cases per Day: 7-Day Rolling Window",
-                y = "Count of COVID-19 Cases"
-            ) + 
-            scale_colour_manual(values = cbbPalette) + 
-            geom_line(size = 1)
+        if (length(input$vars1) == 0) {
+            AveCases <- 
+                ggplot(
+                    data = cleanData_df %>% 
+                        filter(Date >= ymd("20210101")) %>%
+                        mutate(aveCases = `Cases - last 7 days` / 7),
+                    aes(
+                        x = Date,
+                        y = aveCases,
+                        group = County,
+                        colour = County
+                    )) +
+                theme_bw() +
+                theme(legend.position = "bottom") +
+                labs(
+                    title = "COVID-19 Cases",
+                    x = "Average No. Cases per Day: 7-Day Rolling Window",
+                    y = "Count of COVID-19 Cases"
+                ) 
+        } else {
+            AveCases <- 
+                ggplot(
+                    data = cleanData_df %>% 
+                        filter(County == input$vars1) %>% 
+                        filter(Date >= ymd("20210101")) %>%
+                        mutate(aveCases = `Cases - last 7 days` / 7),
+                    aes(
+                        x = Date,
+                        y = aveCases,
+                        group = County,
+                        colour = County
+                    )) +
+                theme_bw() +
+                theme(legend.position = "bottom") +
+                labs(
+                    title = "COVID-19 Cases",
+                    x = "Average No. Cases per Day: 7-Day Rolling Window",
+                    y = "Count of COVID-19 Cases"
+                ) + 
+                scale_colour_manual(values = cbbPalette) + 
+                geom_line(size = 1)
+        }
         
 AveCases
+
     })
 
 output$info <- renderText({
-    paste0("Date:", as_date(input$plot_click$x), "\nCount of Covid Cases:", input$plot_click$y)
+    count_int <- format(input$plot_click$y, digits = 0, scientific = FALSE)
+    paste0("Date:", as_date(input$plot_click$x), "\nCount of Covid Cases:", count_int)
     
     })
 
