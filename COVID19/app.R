@@ -1,24 +1,29 @@
+# install.packages("shinyapps")
 library(shiny)
 library(ggplot2)
 library(tidyverse)
 library(lubridate)
 library(shinythemes)
 library(shinydashboard)
+library(rsconnect)
 
 
-cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220425.csv")
+
+cleanData_df <- read_csv("/Users/annyrodriguez/Documents/analyze_COVID_delta/COVID19/cleaned1_CDC_COVID_data_20220502.csv")
 county_char <- c("Miami-Dade", "Broward", "Palm Beach")
 cbbPalette <- c(
     "#081E3F", "#B6862C", "#CC0066", "#00FFFF", "#FFCC00", "#000000"
 )
-
+de
 ui <- fluidPage(
     theme = shinytheme("yeti"),
     titlePanel("COVID-19 Informational Graphs - Miami-Dade, Broward, and Palm Beach Counties"),
     hr(style="border-color: #081E3F;"),
     sidebarLayout(
         sidebarPanel(
-            helpText(strong("Please select which county/counties you would like to view.")),
+          style = "position: fixed; width: 25%",
+          fluid = TRUE,
+          helpText(strong("Please select which county/counties you would like to view.")),
             checkboxGroupInput("vars1", label = "County",
              choices = county_char,
              selected = ("Miami-Dade"),
@@ -35,17 +40,29 @@ ui <- fluidPage(
           We are examining the trajectory of COVID-19 in three of the largest counties in Florida:", 
           strong(span("Miami-Dade, Broward, and Palm Beach.", style = "color:#1F6DBA"))),
         br(),
-          p("We can add information here"),
+        h3("How to Use this Tool", style = "color:#B6862C"),
+          p("Using the checkbox on the left-hand side, you can select which county 
+            or counties you'd like to view."),
+        br(),
+        p("It is important to note that",
+          strong(span("colors", style = "color:#1F6DBA")),
+          "are not tied to a specific",
+          strong("county"),
+          ", they are subject to change."),
+        br(),
+        p("Please,", strong(span("SCROLL DOWN FOR GRAPHS.", style = "color:#1F6DBA"))),
         br(),
         h3("About the Data", style = "color:#B6862C"),
-          p( "We're using the data provided by the Centers of Disease Control and Prevention (CDC) through their",
+          p( "We're using the data provided by the Centers of Disease Control and Prevention (CDC) 
+             through their",
           strong("Community Health Report"), 
           "which can be found",
           tags$a(href="https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9", "here"),
           "."),
         br(),
           p("There may be variance in reporting due to the nature of data collection. 
-            This may cause temporary spikes or dips (e.g. shifts from reporting confirmed and probable cases to reporting just confirmed cases).", 
+            This may cause temporary spikes or dips (e.g. shifts from reporting confirmed 
+            and probable cases to reporting just confirmed cases).", 
           "All data are presented as", 
           strong("7-day totals or averages"),
           "to adjust for these anomalies as well as weekly variations in reporting."),
@@ -57,14 +74,8 @@ ui <- fluidPage(
           tags$a(href="https://www.flhealthcharts.gov/FLQUERY_New/Population/Count", "here"),
           "."),
         br(),
-          p("It is important to note that",
-          strong(span("colors", style = "color:#1F6DBA")),
-          "are not tied to a specific",
-          strong("county"),
-          ", they are subject to change."),
-        br(),
         h3("Average Cases", style = "color:#B6862C"),
-          p("This graph shows the number and 7-day moving average of COVID-19 cases per day for"),
+          p("This graph shows the number and 7-day moving average of COVID-19 cases per day."),
         br(),
         h3("Proportion Positive", style = "color:#B6862C"),
           p("This graph shows the positivy rate based on the 7-day moving average."),
@@ -148,7 +159,6 @@ server <- function(input, output){
         }
         
 AveCases
-
     })
 
 output$info <- renderText({
