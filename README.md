@@ -20,7 +20,4 @@ In order to replicate our work, here are the following steps:
 
 ## Shiny
 We also created a Shiny App to show our work, please visit: https://annyrodriguez.shinyapps.io/COVID19/ 
-
-If you'd like to look at our code for our Shiny App, follow these steps:
-
-1.
+Our code is available within the COVID19 folder. The app is titled COVID19App.R.
