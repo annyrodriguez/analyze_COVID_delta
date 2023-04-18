@@ -17,3 +17,10 @@ In order to replicate our work, here are the following steps:
 3. Wrangle all the data files in the `data_CDC_raw/` directory: the most recent script (as of 12 January 2022) is `scripts/wrangle_CDC_20220112.R`. Write the first "draft" of the wrangled data to `data_clean/` with this script.
 4. After wrangling the data (the first pass), we run the plotting script `scripts/all_plots_20220112.R`. This script includes additional figure-specific data wrangling steps; the resulting data sets are saved to the `COVID19/` directory for use in our Shiny app. Additionally, this script will save two sets of figures (summary and vaccine specific) to the the `figures/` directory.
 
+
+## Shiny
+We also created a Shiny App to show our work, please visit: https://annyrodriguez.shinyapps.io/COVID19/ 
+
+If you'd like to look at our code for our Shiny App, follow these steps:
+
+1.
